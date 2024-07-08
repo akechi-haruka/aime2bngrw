@@ -1,0 +1,25 @@
+LIBRARY aime2bngrw
+
+EXPORTS
+    _BngRwAttach@24=BngRwAttach
+    _BngRwDevReset@12=BngRwDevReset
+    _BngRwExReadMifareAllBlock@8=BngRwExReadMifareAllBlock
+    _BngRwFin@0=BngRwFin
+    _BngRwGetFwVersion@4=BngRwGetFwVersion
+    _BngRwGetStationID@4=BngRwGetStationID
+    _BngRwGetTotalRetryCount@4=BngRwGetTotalRetryCount
+    _BngRwGetVersion@0=BngRwGetVersion
+    _BngRwInit@0=BngRwInit
+    _BngRwIsCmdExec@4=BngRwIsCmdExec
+    _BngRwReqAction@16=BngRwReqAction
+    _BngRwReqAiccAuth@28=BngRwReqAiccAuth
+    _BngRwReqBeep@16=BngRwReqBeep
+    _BngRwReqCancel@4=BngRwReqCancel
+    _BngRwReqFwCleanup@12=BngRwReqFwCleanup
+    _BngRwReqFwVersionup@16=BngRwReqFwVersionup
+    _BngRwReqLatchID@12=BngRwReqLatchID
+    _BngRwReqLed@16=BngRwReqLed
+    _BngRwReqSendMailTo@40=BngRwReqSendMailTo
+    _BngRwReqSendUrlTo@32=BngRwReqSendUrlTo
+    _BngRwReqWaitTouch@20=BngRwReqWaitTouch
+    _BngRwSetLedPower@12=BngRwSetLedPower
