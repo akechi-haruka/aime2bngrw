@@ -1,6 +1,7 @@
 #include <windows.h>
 
 #include <stdint.h>
+#include <api/api.h>
 
 #include "config.h"
 #include "aime.h"
@@ -12,6 +13,18 @@ static PCRDATA cr_operation;
 static bool is_scanning = false;
 static bool initialized = false;
 static bool connected = false;
+
+DWORD WINAPI api_read_signal_thread(void* data) {
+    while (initialized){
+        if (api_get_card_switch_state()){
+            bool read = api_get_card_reading_state_and_clear_switch_state();
+            dprintf("BNGRW: API card switch state to: %d", read);
+            aime_set_polling(read);
+        }
+        Sleep(500);
+    }
+    return 1;
+}
 
 HRESULT bngrw_init(struct aime2bngrw_config* cfg)
 {
@@ -29,6 +42,11 @@ HRESULT bngrw_init(struct aime2bngrw_config* cfg)
     dprintf("BNGRW: initialized\n");
 
     initialized = true;
+
+    if (CreateThread(NULL, 0, api_read_signal_thread, 0, 0, NULL) == NULL){
+        dprintf("BNGRW: API thread start fail: %ld", GetLastError());
+        return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -143,6 +161,8 @@ _stdcall int BngRwExReadMifareAllBlock(int a1, int a2){
 // used
 _stdcall int BngRwFin(){
 	dprintf("BNGRW: BngRwFin\n");
+
+    connected = false;
 
     aime_close();
 
@@ -372,6 +392,7 @@ DWORD WINAPI BngRwReqWaitTouchThread(void* data) {
 				dprintf("BNGRW: sending to game\n");
 				arg->on_scan(0, 0, (void*)&(arg->response), arg->card_reader);
 				is_scanning = false;
+                api_block_card_reader(false);
 				return BNGRW_S_OK;
 			}
 			Sleep(10);
@@ -381,6 +402,7 @@ DWORD WINAPI BngRwReqWaitTouchThread(void* data) {
 	} else {
 		dprintf("BNGRW: no scan function\n");
 	}
+    api_block_card_reader(false);
 	is_scanning = false;
     return BNGRW_S_OK;
 }
@@ -389,6 +411,8 @@ DWORD WINAPI BngRwReqWaitTouchThread(void* data) {
 // used
 _stdcall int BngRwReqWaitTouch(int a1, int timeout, int a3, BngRwReqCallback on_scan, void* a5){
 	dprintf("BNGRW: BngRwReqWaitTouch: %d, %d, %x, %p, %p\n", a1, timeout, a3, on_scan, a5);
+
+    api_block_card_reader(true);
 
     HRESULT hr = aime_set_polling(true);
     if (!SUCCEEDED(hr)){

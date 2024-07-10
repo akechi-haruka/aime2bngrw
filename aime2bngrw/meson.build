@@ -6,6 +6,7 @@ aime2bngrw = shared_library(
     c_pch : '../precompiled.h',
     vs_module_defs : 'exports.def',
     link_with : [
+        api_lib
     ],
     dependencies : [
     ],

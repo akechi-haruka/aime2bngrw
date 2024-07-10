@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <api/api.h>
+#include <stdio.h>
+
 #define NAME "Aime Reader"
 #define SUPER_VERBOSE 1
 
@@ -400,6 +403,13 @@ DWORD WINAPI polling_thread(void* data) {
         }
 
         if (last_card_type != CARD_TYPE_NONE){
+
+            if (last_card_type == CARD_TYPE_MIFARE){
+                api_send(PACKET_07_CARD_AIME, aime_get_card_len(), aime_get_card_id());
+            } else if (last_card_type == CARD_TYPE_FELICA){
+                api_send(PACKET_05_CARD_FELICA, aime_get_card_len(), aime_get_card_id());
+            }
+
             if (aime_use_led_flash){
                 if (last_card_type != CARD_TYPE_ILLEGAL) {
                     aime_led_set(0, 0, 255);
@@ -432,6 +442,14 @@ HRESULT aime_set_polling(bool on){
 
     dprintf(NAME ": Set Polling (%d)\n", on);
 
+    if (!on && hThread != INVALID_HANDLE_VALUE){
+        dprintf(NAME ": Waiting for thread termination\n");
+        WaitForSingleObject(hThread, INFINITE);
+        dprintf(NAME ": Thread terminated\n");
+
+        hThread = INVALID_HANDLE_VALUE;
+    }
+
     struct aime_req_any req = {0};
     struct aime_resp_any resp = {0};
     req.cmd = on ? AIME_CMD_RADIO_ON : AIME_CMD_RADIO_OFF;
@@ -450,7 +468,7 @@ HRESULT aime_set_polling(bool on){
     last_card_type = CARD_TYPE_NONE;
     last_card_len = 0;
 
-    if (is_polling){
+    if (is_polling && hThread == INVALID_HANDLE_VALUE){
         hThread = CreateThread(NULL, 0, polling_thread, NULL, 0, NULL);
 
         if (hThread == INVALID_HANDLE_VALUE){
@@ -458,12 +476,6 @@ HRESULT aime_set_polling(bool on){
             dprintf(NAME ": Thread failed: %lu\n", er);
             return HRESULT_FROM_WIN32(er);
         }
-    } else if (hThread != INVALID_HANDLE_VALUE){
-        dprintf(NAME ": Waiting for thread termination\n");
-        WaitForSingleObject(hThread, INFINITE);
-        dprintf(NAME ": Thread terminated\n");
-
-        hThread = INVALID_HANDLE_VALUE;
     }
 
     return S_OK;
@@ -631,7 +643,7 @@ HRESULT aime_mifare_select(uint32_t uid){
 
     HRESULT hr = aime_transact_packet(&req, &resp);
 
-    dprintf(NAME ": Set MIFARE Key 1: %d\n", resp.status);
+    dprintf(NAME ": Select Mifare: %d\n", resp.status);
 
     return hr;
 }
@@ -673,6 +685,10 @@ HRESULT aime_mifare_read_block(uint32_t uid, uint8_t block, uint8_t* block_conte
 
     dprintf(NAME ": Read Block: %d\n", resp.status);
     dump(resp.payload, resp.len);
+
+    if (resp.status != 0){
+        return E_FAIL;
+    }
 
     if (resp.len > *block_len){
         return E_NOT_SUFFICIENT_BUFFER;

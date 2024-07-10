@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <winuser.h>
+#include <api/api.h>
 
 #include "aime2bngrw/aime2bngrw.h"
 #include "aime2bngrw/config.h"
@@ -23,6 +24,8 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD cause, void *ctx)
     aime2bngrw_config_load(&cfg, ".\\aime2bngrw.ini");
 
     bngrw_init(&cfg);
+
+    api_init();
 
     dprintf("aime2bngrw: Loaded\n");
 

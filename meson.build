@@ -33,5 +33,7 @@ endif
 cc = meson.get_compiler('c')
 
 inc = include_directories('.')
+ws2_lib = cc.find_library('ws2_32')
 
+subdir('api')
 subdir('aime2bngrw')
