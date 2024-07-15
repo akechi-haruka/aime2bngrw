@@ -97,11 +97,13 @@ HRESULT aime_connect(uint32_t port, int baud, bool use_custom_led_flash) {
 
 HRESULT aime_close(){
 
+    is_polling = false;
+
     aime_set_polling(false);
+    aime_led_set(0, 0, 0);
 
     CloseHandle(hSerial);
     hSerial = NULL;
-    is_polling = false;
     memset(last_card_id, 0, CARD_BUF_LEN);
     last_card_type = CARD_TYPE_NONE;
     last_card_len = 0;
