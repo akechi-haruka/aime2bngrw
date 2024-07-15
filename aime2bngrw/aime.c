@@ -437,6 +437,7 @@ DWORD WINAPI polling_thread(void* data) {
     }
 
     dprintf(NAME ": Card Polling Thread stopped\n");
+    hThread = INVALID_HANDLE_VALUE;
     return 0;
 }
 
