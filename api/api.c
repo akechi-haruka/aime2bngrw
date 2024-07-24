@@ -131,9 +131,12 @@ int api_parse(int id, int len, const char * data){
 
 	char blank_data[0];
 	switch (id){
-		case PACKET_00_PING:
-			api_send(PACKET_01_ACK, 0, blank_data);
-			break;
+        case PACKET_00_PING:
+            api_send(PACKET_01_ACK, 0, blank_data);
+            break;
+        case PACKET_08_SEARCH:
+            api_send(PACKET_00_PING, 0, blank_data);
+            break;
 		case PACKET_15_SET_CARD_READING_STATE:
             dprintf("API: Set card read state: %d\n", data[0]);
 			api_card_state_switch = true;
