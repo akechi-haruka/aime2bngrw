@@ -163,8 +163,8 @@ int api_parse(int id, int len, const char *data) {
             break;
         case PACKET_31_SET_CARD_READING_STATE:
             dprintf("API: Set card read state: %d\n", data[0]);
-            api_card_state_switch = true;
             api_card_reading_state = data[0];
+            api_card_state_switch = true;
             api_send(PACKET_21_ACK, 0, NULL);
             break;
         default:
