@@ -16,9 +16,13 @@ static bool connected = false;
 
 DWORD WINAPI api_read_signal_thread(void* data) {
     while (initialized){
+        uint8_t* rgb = api_get_aime_rgb_and_clear();
+        if (rgb != NULL){
+            aime_led_set(rgb[0], rgb[1], rgb[2]);
+        }
         if (api_get_card_switch_state()){
             bool read = api_get_card_reading_state_and_clear_switch_state();
-            dprintf("BNGRW: API card switch state to: %d", read);
+            dprintf("BNGRW: API card switch state to: %d\n", read);
             aime_set_polling(read);
         }
         Sleep(500);

@@ -1,25 +1,23 @@
-#define PACKET_00_PING 0
-#define PACKET_01_ACK 1
-#define PACKET_02_TEST 2
-#define PACKET_03_SERVICE 3
-#define PACKET_04_CREDIT 4
-#define PACKET_05_CARD_FELICA 5
-#define PACKET_06_AIME_RGB 6
-#define PACKET_07_CARD_AIME 7
-#define PACKET_08_SEARCH 8
-#define PACKET_09_SHUTDOWN 9
-#define PACKET_10_SEQUENCE 10
-#define PACKET_11_VFD 11
-#define PACKET_12_OM_PIN_AUTH 12
-#define PACKET_13_OM_PIN_RESULT 13
-#define PACKET_14_VFD_SHIFTJIS 14
-#define PACKET_15_SET_CARD_READING_STATE 15
-#define PACKET_16_BLOCK_CARD_READER 16
+#define PACKET_20_PING 20
+#define PACKET_21_ACK 21
+#define PACKET_22_TEST 22
+#define PACKET_23_SERVICE 23
+#define PACKET_24_CREDIT 24
+#define PACKET_25_CARD_FELICA 25
+#define PACKET_26_CARD_AIME 26
+#define PACKET_27_SEARCH 27
+#define PACKET_28_SEQUENCE 28
+#define PACKET_29_VFD 29
+#define PACKET_30_VFD_SHIFTJIS 30
+#define PACKET_31_SET_CARD_READING_STATE 31
+#define PACKET_32_BLOCK_CARD_READER 32
+#define PACKET_33_AIME_RGB 33
 
-#define PACKET_HEADER_LEN 3
+#define PACKET_HEADER_LEN 4
 #define PACKET_HEADER_FIELD_ID 0
-#define PACKET_HEADER_FIELD_LEN 1
+#define PACKET_HEADER_FIELD_GROUPID 1
 #define PACKET_HEADER_FIELD_MACHINEID 2
+#define PACKET_HEADER_FIELD_LEN 3
 
 #define PACKET_CONTENT_MAX_SIZE 128
 #define PACKET_MAX_SIZE PACKET_CONTENT_MAX_SIZE + PACKET_HEADER_LEN
@@ -35,11 +33,11 @@
 #define API_PACKET_ID_UNKNOWN -3
 #define API_SOCKET_OPERATION_FAIL -4
 
-HRESULT api_init();
+HRESULT api_init(const char* config_filename);
 void api_stop();
 int api_parse(int id, int len, const char* data);
 int api_send(int id, int len, const char* data);
 bool api_get_card_switch_state();
 bool api_get_card_reading_state_and_clear_switch_state();
 void api_block_card_reader(bool b);
-HRESULT api_initialize_send();
+uint8_t* api_get_aime_rgb_and_clear();
