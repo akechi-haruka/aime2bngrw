@@ -1,0 +1,4 @@
+[wrap-git]
+directory = segapi
+url = https://github.com/akechi-haruka/segapi
+revision = head

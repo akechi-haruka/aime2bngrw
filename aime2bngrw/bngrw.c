@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include <stdint.h>
-#include <api/api.h>
+#include <subprojects/segapi/api/api.h>
 
 #include "config.h"
 #include "aime.h"

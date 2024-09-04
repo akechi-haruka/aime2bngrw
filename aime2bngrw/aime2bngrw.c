@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <winuser.h>
-#include <api/api.h>
+#include <subprojects/segapi/api/api.h>
 
 #include "aime2bngrw/aime2bngrw.h"
 #include "aime2bngrw/config.h"

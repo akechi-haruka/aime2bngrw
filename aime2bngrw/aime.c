@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <api/api.h>
+#include <subprojects/segapi/api/api.h>
 #include <stdio.h>
 
 #define NAME "Aime Reader"
@@ -407,9 +407,9 @@ DWORD WINAPI polling_thread(void* data) {
         if (last_card_type != CARD_TYPE_NONE){
 
             if (last_card_type == CARD_TYPE_MIFARE){
-                api_send(PACKET_26_CARD_AIME, aime_get_card_len(), aime_get_card_id());
+                api_send(PACKET_26_CARD_AIME, aime_get_card_len(), (uint8_t*)aime_get_card_id());
             } else if (last_card_type == CARD_TYPE_FELICA){
-                api_send(PACKET_25_CARD_FELICA, aime_get_card_len(), aime_get_card_id());
+                api_send(PACKET_25_CARD_FELICA, aime_get_card_len(), (uint8_t*)aime_get_card_id());
             }
 
             if (aime_use_led_flash){
