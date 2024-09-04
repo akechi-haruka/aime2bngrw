@@ -12,6 +12,8 @@
 
 static struct aime2bngrw_config cfg;
 
+#define MIN_API_VER 0x010101
+
 BOOL WINAPI DllMain(HMODULE mod, DWORD cause, void *ctx)
 {
 
@@ -20,6 +22,10 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD cause, void *ctx)
     }
 
     dprintf("aime2bngrw: Initializing\n");
+
+    if (api_get_version() <= MIN_API_VER){
+        dprintf("aime2bngrw: API dll is outdated! At least v.%x is required, DLL is v.%x", MIN_API_VER, api_get_version());
+    }
 
     aime2bngrw_config_load(&cfg, ".\\aime2bngrw.ini");
 
