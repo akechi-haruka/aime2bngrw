@@ -30,6 +30,7 @@ static uint8_t last_card_len = 0;
 static uint8_t aime_seq = 0;
 static bool aime_use_led_flash = false;
 static bool aime_led_flash = false;
+static bool is_polling_cancel_request = false;
 
 HRESULT aime_connect(uint32_t port, int baud, bool use_custom_led_flash) {
 
@@ -397,7 +398,7 @@ HRESULT aime_get_led_info(char* out, uint32_t* len){
 
 DWORD WINAPI polling_thread(void* data) {
     dprintf(NAME ": Card Polling Thread started\n");
-    while (is_polling){
+    while (is_polling && !is_polling_cancel_request){
 
         if (FAILED(aime_poll())){
             dprintf(NAME ": ERROR: Card polling failed!\n");
@@ -437,6 +438,7 @@ DWORD WINAPI polling_thread(void* data) {
     }
 
     dprintf(NAME ": Card Polling Thread stopped\n");
+    is_polling_cancel_request = false;
     hThread = INVALID_HANDLE_VALUE;
     return 0;
 }
@@ -447,6 +449,7 @@ HRESULT aime_set_polling(bool on){
 
     if (!on && hThread != INVALID_HANDLE_VALUE){
         dprintf(NAME ": Waiting for thread termination\n");
+        is_polling_cancel_request = true;
         WaitForSingleObject(hThread, INFINITE);
         dprintf(NAME ": Thread terminated\n");
 
