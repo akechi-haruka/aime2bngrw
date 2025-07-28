@@ -36,5 +36,6 @@ inc = include_directories('.')
 ws2_lib = cc.find_library('ws2_32')
 
 segapi = subproject('segapi')
+aimelib = subproject('aimelib')
 
 subdir('aime2bngrw')

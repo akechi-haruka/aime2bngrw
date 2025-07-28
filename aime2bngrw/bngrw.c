@@ -2,9 +2,9 @@
 
 #include <stdint.h>
 #include <subprojects/segapi/api/api.h>
+#include <subprojects/aimelib/aime.h>
 
 #include "config.h"
-#include "aime.h"
 #include "util/dprintf.h"
 #include "bngrw.h"
 

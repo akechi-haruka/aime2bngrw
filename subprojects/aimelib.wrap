@@ -1,0 +1,4 @@
+[wrap-git]
+directory = aimelib
+url = https://github.com/akechi-haruka/aimelib
+revision = HEAD

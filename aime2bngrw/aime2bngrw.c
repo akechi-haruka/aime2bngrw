@@ -32,7 +32,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD cause, void *ctx)
 
     bngrw_init(&cfg);
 
-    api_init(".\\aime2bngrw.ini");
+    api_init(L".\\aime2bngrw.ini");
 
     dprintf("aime2bngrw: Loaded\n");
 
