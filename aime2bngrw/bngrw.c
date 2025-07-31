@@ -13,7 +13,7 @@ static PCRDATA cr_operation;
 static bool is_scanning = false;
 static bool initialized = false;
 static bool connected = false;
-static bool api_polling = false;
+static bool api_is_scanning = false;
 
 DWORD WINAPI api_read_signal_thread(void* data) {
     while (initialized){
@@ -23,21 +23,26 @@ DWORD WINAPI api_read_signal_thread(void* data) {
         }
         if (api_get_card_switch_state()){
             bool read = api_get_card_reading_state_and_clear_switch_state();
+            if (is_scanning) {
+                dprintf("BNGRW: Ignoring API card switch state because we're reading ourselves\n");
+                continue;
+            }
             dprintf("BNGRW: API card switch state to: %d\n", read);
             if (read) {
+                aime_set_polling(false);
                 aime_clear_card();
             }
             aime_set_polling(read);
-            api_polling = read;
+            api_is_scanning = read;
         }
-        if (api_polling && aime_get_card_type() != CARD_TYPE_NONE) {
+        if (api_is_scanning && aime_get_card_type() != CARD_TYPE_NONE) {
             uint8_t type = aime_get_card_type();
             if (type == CARD_TYPE_FELICA) {
                 api_send(PACKET_25_CARD_FELICA, aime_get_card_len(), (const uint8_t*)aime_get_card_id());
             } else if (type == CARD_TYPE_MIFARE) {
                 api_send(PACKET_26_CARD_AIME, aime_get_card_len(), (const uint8_t*)aime_get_card_id());
             }
-            api_polling = false;
+            api_is_scanning = false;
         }
         Sleep(500);
     }
@@ -382,9 +387,6 @@ DWORD WINAPI BngRwReqWaitTouchThread(void* data) {
                 } else if (card_type == CARD_TYPE_FELICA){
                     bngrw_card_type = BNGRW_CARDTYPE_FELICALITE;
                     bngrw_id_type = BNGRW_IDTYPE_SEGA;
-                } else if (card_type == CARD_TYPE_ILLEGAL){
-                    bngrw_card_type = BNGRW_CARDTYPE_UNKNOWN;
-                    bngrw_id_type = BNGRW_IDTYPE_UNKNOWN;
                 }
 
                 dprintf("BNGRW: card id: %s (%d, %d)\n", bngrw_card_id, bngrw_card_type, bngrw_id_type);
@@ -430,8 +432,8 @@ DWORD WINAPI BngRwReqWaitTouchThread(void* data) {
 _stdcall int BngRwReqWaitTouch(int a1, int timeout, int a3, BngRwReqCallback on_scan, void* a5){
 	dprintf("BNGRW: BngRwReqWaitTouch: %d, %d, %x, %p, %p\n", a1, timeout, a3, on_scan, a5);
 
+    api_is_scanning = false;
     api_block_card_reader(true);
-    api_polling = false;
 
     HRESULT hr = aime_set_polling(true);
     if (!SUCCEEDED(hr)){
