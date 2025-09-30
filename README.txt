@@ -12,7 +12,7 @@ Specialized for Synchronica, but can be used for any game.
 * Make sure [bngrw] is set to enable=0 in segatools.ini.
 * Synchronica: Make sure [side] is set correctly in aime2bngrw.ini.
 
-See io42io3.example_sync.ini for an example config (FGO io4 to Synchronica WAJV)
+See aime2bngrw_example.ini for an example config (aime port 3)
 
 --- Compiling ---
 
